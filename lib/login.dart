@@ -1,12 +1,15 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
-import 'package:http/http.dart' as http;
+//import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'dart:async';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'login_icons.dart';
-import 'index.dart';
+//import 'index.dart';
+import 'package:dio/dio.dart';
+
+void main() => runApp(LoginPage());
 
 class LoginPage extends StatefulWidget {
   @override
@@ -28,20 +31,7 @@ class _LoginPageState extends State<LoginPage> {
     print(response.body);
   } */
 
-  Future getData() async {
-    // var url = 'http://10.0.2.2/midn/sign.php';
-    http.Response response =
-        await http.post('http://127.0.0.1/midn/sign.php', body: {
-      "email": unameController.text,
-      "password": passwordController.text,
-    });
-    var data = jsonDecode(response.body);
-    if (data[0]) {
-      Navigator.push(
-          context, MaterialPageRoute(builder: (context) => HomePage()));
-    }
-    //print(data.toString());
-  }
+  
 
   @override
   Widget build(BuildContext context) {
@@ -132,14 +122,14 @@ class _LoginPageState extends State<LoginPage> {
                         } else if (password.length < 6) {
                           showToast("Password must be more than 6 character");
                         }
-                        else {
+                        /* else {
                           //showToast("Logged in");
                           Navigator.push(
                               context,
                               MaterialPageRoute(
                                   builder: (context) => HomePage()));
                                   
-                        }
+                        } */
 
                         //Navigator.push(context, MaterialPageRoute(
                         // builder: (context) => HomePage()
@@ -216,6 +206,36 @@ class _LoginPageState extends State<LoginPage> {
       getData();
     } */
 }
+
+Future register() async {
+    // var url = 'http://10.0.2.2/midn/sign.php';
+    try{
+        //Dio dio = new Dio();
+        FormData formData = new FormData.from(
+          {
+            "action":"register",
+            "email":"unameController.text",
+            "password":"passwordController.text",
+          }
+        );
+    
+    
+    Response response =
+        await Dio().post('http://10.0.2.2/midn/sign.php', data: formData);
+    Map valueMap = json.decode(response.data);
+   // bool success = valueMap['success'];
+    //return success;
+    if(valueMap['success']){
+        showToast("Register successfully");
+        //return success;
+     }
+
+    } catch(e){
+      print(e.toString());
+    }
+    
+    //print(data.toString());
+  }
 
 showToast(String s) {
   Fluttertoast.showToast(
